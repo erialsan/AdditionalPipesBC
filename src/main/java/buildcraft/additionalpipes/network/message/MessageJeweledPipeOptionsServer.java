@@ -1,46 +1,45 @@
 package buildcraft.additionalpipes.network.message;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import buildcraft.additionalpipes.pipes.PipeItemsJeweled;
 import buildcraft.additionalpipes.pipes.SideFilterData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
 
 /**
  * Message that sets the three option booleans of a Jeweled Pipe on the client for all six sides
  *
  */
-public class MessageJeweledPipeOptionsServer implements IMessage, IMessageHandler<MessageJeweledPipeOptionsServer, IMessage>
-{
-	public int x, y, z;
-	byte index; //1-indexed index of filter data that we are updating
+public class MessageJeweledPipeOptionsServer
+    implements IMessage, IMessageHandler<MessageJeweledPipeOptionsServer, IMessage> {
 
-	boolean acceptUnsorted;
-	boolean matchNBT;
-	boolean matchMeta;
-    public MessageJeweledPipeOptionsServer()
-    {
-    }
+    public int x, y, z;
+    byte index; // 1-indexed index of filter data that we are updating
 
-    public MessageJeweledPipeOptionsServer(int x, int y,int z, byte index, SideFilterData filterData)
-    {
-    	this.x = x;
-    	this.y = y;
-    	this.z = z;
-    	this.index = index;
+    boolean acceptUnsorted;
+    boolean matchNBT;
+    boolean matchMeta;
 
-    	acceptUnsorted = filterData.acceptsUnsortedItems();
-    	matchMeta = filterData.matchMetadata();
-    	matchNBT = filterData.matchNBT();
+    public MessageJeweledPipeOptionsServer() {}
+
+    public MessageJeweledPipeOptionsServer(int x, int y, int z, byte index, SideFilterData filterData) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.index = index;
+
+        acceptUnsorted = filterData.acceptsUnsortedItems();
+        matchMeta = filterData.matchMetadata();
+        matchNBT = filterData.matchNBT();
     }
 
     @Override
-    public void fromBytes(ByteBuf buf)
-    {
+    public void fromBytes(ByteBuf buf) {
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
@@ -51,8 +50,7 @@ public class MessageJeweledPipeOptionsServer implements IMessage, IMessageHandle
     }
 
     @Override
-    public void toBytes(ByteBuf buf)
-    {
+    public void toBytes(ByteBuf buf) {
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);
@@ -63,27 +61,24 @@ public class MessageJeweledPipeOptionsServer implements IMessage, IMessageHandle
     }
 
     @Override
-    public IMessage onMessage(MessageJeweledPipeOptionsServer message, MessageContext ctx)
-    {
-    	
-    	World world = ctx.getServerHandler().playerEntity.worldObj;
-    	TileEntity te = world.getTileEntity(message.x, message.y, message.z);
-		if(te instanceof TileGenericPipe)
-		{
-			PipeItemsJeweled pipe = (PipeItemsJeweled) ((TileGenericPipe) te).pipe;
+    public IMessage onMessage(MessageJeweledPipeOptionsServer message, MessageContext ctx) {
 
-			SideFilterData dataToUpdate = pipe.filterData[message.index - 1];
-			dataToUpdate.setAcceptUnsortedItems(message.acceptUnsorted);
-			dataToUpdate.setMatchNBT(message.matchNBT);
-			dataToUpdate.setMatchMetadata(message.matchMeta);
-		}
-    	
-    	return null;
+        World world = ctx.getServerHandler().playerEntity.worldObj;
+        TileEntity te = world.getTileEntity(message.x, message.y, message.z);
+        if (te instanceof TileGenericPipe) {
+            PipeItemsJeweled pipe = (PipeItemsJeweled) ((TileGenericPipe) te).pipe;
+
+            SideFilterData dataToUpdate = pipe.filterData[message.index - 1];
+            dataToUpdate.setAcceptUnsortedItems(message.acceptUnsorted);
+            dataToUpdate.setMatchNBT(message.matchNBT);
+            dataToUpdate.setMatchMetadata(message.matchMeta);
+        }
+
+        return null;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "MessageJeweledPipe";
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.additionalpipes.APConfiguration;
 import buildcraft.additionalpipes.AdditionalPipes;
 import buildcraft.additionalpipes.gui.GuiHandler;
@@ -26,105 +27,102 @@ import buildcraft.transport.pipes.events.PipeEventItem;
 
 public class PipeItemsPriorityInsertion extends APPipe<PipeTransportItems> {
 
-	public int sidePriorities[] = { 1, 1, 1, 1, 1, 1 };
+    public int sidePriorities[] = { 1, 1, 1, 1, 1, 1 };
 
-	public PipeItemsPriorityInsertion(Item item) {
-		super(new PipeTransportItems(), item);
-	}
+    public PipeItemsPriorityInsertion(Item item) {
+        super(new PipeTransportItems(), item);
+    }
 
-	@Override
-	public int getIconIndex(net.minecraftforge.common.util.ForgeDirection connection)
-	{
-		switch(connection) {
-		case DOWN: // -y
-			return 26;
-		case UP: // +y
-			return 27;
-		case NORTH: // -z
-			return 28;
-		case SOUTH: // +z
-			return 29;
-		case WEST: // -x
-			return 30;
-		case EAST: // +x
-		default:
-			return 25;
-		}
-	}
-	
-	public void eventHandler(PipeEventItem.FindDest event)
-	{
-		ArrayList<ForgeDirection> result = new ArrayList<ForgeDirection>();
+    @Override
+    public int getIconIndex(net.minecraftforge.common.util.ForgeDirection connection) {
+        switch (connection) {
+            case DOWN: // -y
+                return 26;
+            case UP: // +y
+                return 27;
+            case NORTH: // -z
+                return 28;
+            case SOUTH: // +z
+                return 29;
+            case WEST: // -x
+                return 30;
+            case EAST: // +x
+            default:
+                return 25;
+        }
+    }
 
-		for(int checkingPriority = 6; checkingPriority >= 1; --checkingPriority)
-		{
-			boolean foundAny = false;
-			
-			for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
-			{
-				if(sidePriorities[side.ordinal()] == checkingPriority)
-				{
-					TileEntity entity = container.getTile(side);
-					if (entity instanceof IInventory)
-					{
-						ITransactor transactor = Transactor.getTransactorFor(entity);
-						if (transactor.add(event.item.getItemStack(), side.getOpposite(), false).stackSize > 0)
-						{
-							result.add(side);
-						}
-						
-						foundAny = true;
-					}
-				}
-			}
-			
-			if(foundAny)
-			{
-				break;
-			}
-		}
-		
-		if(!result.isEmpty())
-		{
-			event.destinations.clear();
-			event.destinations.addAll(result);
-		}
-	}
+    public void eventHandler(PipeEventItem.FindDest event) {
+        ArrayList<ForgeDirection> result = new ArrayList<ForgeDirection>();
 
-	@Override
-	public boolean blockActivated(EntityPlayer player, ForgeDirection direction) {
-		if(player.isSneaking()) {
-			return false;
-		}
+        for (int checkingPriority = 6; checkingPriority >= 1; --checkingPriority) {
+            boolean foundAny = false;
 
-		Item equipped = player.getCurrentEquippedItem() != null ? player.getCurrentEquippedItem().getItem() : null;
-		if(equipped != null) {
-			if(APConfiguration.filterRightclicks && AdditionalPipes.isPipe(equipped)) {
-				return false;
-			}
-		}
+            for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                if (sidePriorities[side.ordinal()] == checkingPriority) {
+                    TileEntity entity = container.getTile(side);
+                    if (entity instanceof IInventory) {
+                        ITransactor transactor = Transactor.getTransactorFor(entity);
+                        if (transactor.add(event.item.getItemStack(), side.getOpposite(), false).stackSize > 0) {
+                            result.add(side);
+                        }
 
-		if(player.worldObj.isRemote) return true;
-		player.openGui(AdditionalPipes.instance, GuiHandler.PIPE_PRIORITY, container.getWorldObj(), container.xCoord, container.yCoord, container.zCoord);
+                        foundAny = true;
+                    }
+                }
+            }
 
-		return true;
-	}
+            if (foundAny) {
+                break;
+            }
+        }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-			
-		nbt.setIntArray("priorities", sidePriorities);
-	}
+        if (!result.isEmpty()) {
+            event.destinations.clear();
+            event.destinations.addAll(result);
+        }
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
+    @Override
+    public boolean blockActivated(EntityPlayer player, ForgeDirection direction) {
+        if (player.isSneaking()) {
+            return false;
+        }
 
-		if(nbt.hasKey("priorities"))
-		{
-			sidePriorities = nbt.getIntArray("priorities");
-		}
-	}
+        Item equipped = player.getCurrentEquippedItem() != null ? player.getCurrentEquippedItem()
+            .getItem() : null;
+        if (equipped != null) {
+            if (APConfiguration.filterRightclicks && AdditionalPipes.isPipe(equipped)) {
+                return false;
+            }
+        }
+
+        if (player.worldObj.isRemote) return true;
+        player.openGui(
+            AdditionalPipes.instance,
+            GuiHandler.PIPE_PRIORITY,
+            container.getWorldObj(),
+            container.xCoord,
+            container.yCoord,
+            container.zCoord);
+
+        return true;
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+
+        nbt.setIntArray("priorities", sidePriorities);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+
+        if (nbt.hasKey("priorities")) {
+            sidePriorities = nbt.getIntArray("priorities");
+        }
+    }
 
 }

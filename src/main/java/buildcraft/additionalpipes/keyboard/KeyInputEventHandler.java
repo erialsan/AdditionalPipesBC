@@ -9,25 +9,21 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class KeyInputEventHandler
-{
+public class KeyInputEventHandler {
 
     @SubscribeEvent
-    public void handleKeyInputEvent(InputEvent.KeyInputEvent event)
-    {
-        if (FMLClientHandler.instance().getClient().inGameHasFocus)
-        {
-            if (FMLClientHandler.instance().getClientPlayerEntity() != null)
-            {
-            	if(Keybindings.lasers.isPressed())
-            	{
-	            	ChunkLoadViewDataProxy viewer = AdditionalPipes.instance.chunkLoadViewer;
-	    			if(!viewer.lasersActive()) 
-	    			{
-	    				viewer.requestPersistentChunks();
-	    			}
-	    			viewer.toggleLasers();
-            	}
+    public void handleKeyInputEvent(InputEvent.KeyInputEvent event) {
+        if (FMLClientHandler.instance()
+            .getClient().inGameHasFocus) {
+            if (FMLClientHandler.instance()
+                .getClientPlayerEntity() != null) {
+                if (Keybindings.lasers.isPressed()) {
+                    ChunkLoadViewDataProxy viewer = AdditionalPipes.instance.chunkLoadViewer;
+                    if (!viewer.lasersActive()) {
+                        viewer.requestPersistentChunks();
+                    }
+                    viewer.toggleLasers();
+                }
             }
         }
     }

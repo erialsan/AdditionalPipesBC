@@ -9,39 +9,40 @@ import buildcraft.transport.TileGenericPipe;
  * Interface that describes the functions of a Teleport Pipe.
  * 
  * Mostly just getters and setters for the various properties.
+ * 
  * @author Jamie
  *
  */
-public interface ITeleportPipe 
-{
-	public void setFrequency(int freq);
-	
-	public int getFrequency();
-	
-	/**
-	 * Gets the send-receive state of the teleport pipe.
-	 * 
-	 *  0b0 = none, 0b1 = send, 0b10 = receive, 0b11 = both
-	 * @param state
-	 */
-	public byte getState();
+public interface ITeleportPipe {
 
-	public void setState(byte state);
+    public void setFrequency(int freq);
 
+    public int getFrequency();
 
-	public boolean isPublic();
+    /**
+     * Gets the send-receive state of the teleport pipe.
+     * 
+     * 0b0 = none, 0b1 = send, 0b10 = receive, 0b11 = both
+     * 
+     * @param state
+     */
+    public byte getState();
 
-	public void setPublic(boolean isPublic);
+    public void setState(byte state);
 
-	public PipeType getType();
-	
-	public Position getPosition();
-	
-	public boolean canReceive();
-	
-	public boolean canSend();
+    public boolean isPublic();
 
-	public UUID getOwnerUUID();
-	
-	public TileGenericPipe getContainer();
+    public void setPublic(boolean isPublic);
+
+    public PipeType getType();
+
+    public Position getPosition();
+
+    public boolean canReceive();
+
+    public boolean canSend();
+
+    public UUID getOwnerUUID();
+
+    public TileGenericPipe getContainer();
 }

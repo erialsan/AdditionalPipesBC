@@ -6,24 +6,22 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.world.World;
 
-public class EntityBetterCat extends EntityOcelot
-{
+public class EntityBetterCat extends EntityOcelot {
 
-	public EntityBetterCat(World world)
-	{
-		super(world);
+    public EntityBetterCat(World world) {
+        super(world);
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityCreeper.class, 0, true));
-        System.out.println(this.getEntityAttribute(SharedMonsterAttributes.followRange).getAttributeValue());
-	}
-	
-	@Override
-	public void onLivingUpdate()
-	{
-		super.onLivingUpdate();
-		if(this.getHealth() < this.getMaxHealth() && this.ticksExisted % 40 * 12 == 0)
-        {
+        System.out.println(
+            this.getEntityAttribute(SharedMonsterAttributes.followRange)
+                .getAttributeValue());
+    }
+
+    @Override
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if (this.getHealth() < this.getMaxHealth() && this.ticksExisted % 40 * 12 == 0) {
             this.heal(1.0F);
         }
-	}
+    }
 
 }

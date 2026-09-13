@@ -5,5 +5,3 @@
 package buildcraft.additionalpipes.api;
 
 import cpw.mods.fml.common.API;
-
-

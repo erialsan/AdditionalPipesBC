@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.additionalpipes.AdditionalPipes;
 import buildcraft.additionalpipes.pipes.PipeItemsClosed;
 import buildcraft.additionalpipes.pipes.PipeTeleport;
@@ -17,28 +18,24 @@ import buildcraft.transport.TileGenericPipe;
 
 public class GateProvider implements ITriggerProvider {
 
-	@Override
-	public LinkedList<ITriggerInternal> getInternalTriggers(IStatementContainer container)
-	{
-		
-		Pipe<?> pipe = ((TileGenericPipe)container.getTile()).pipe;
-		
-		LinkedList<ITriggerInternal> list = new LinkedList<ITriggerInternal>();
-		if(pipe instanceof PipeItemsClosed)
-		{
-			list.add(AdditionalPipes.instance.triggerPipeClosed);
-		}
-		if(pipe instanceof PipeTeleport)
-		{
-			
-		}
-		return list;
-	}
+    @Override
+    public LinkedList<ITriggerInternal> getInternalTriggers(IStatementContainer container) {
 
-	@Override
-	public Collection<ITriggerExternal> getExternalTriggers(
-			ForgeDirection side, TileEntity tile) {
-		return null;
-	}
+        Pipe<?> pipe = ((TileGenericPipe) container.getTile()).pipe;
+
+        LinkedList<ITriggerInternal> list = new LinkedList<ITriggerInternal>();
+        if (pipe instanceof PipeItemsClosed) {
+            list.add(AdditionalPipes.instance.triggerPipeClosed);
+        }
+        if (pipe instanceof PipeTeleport) {
+
+        }
+        return list;
+    }
+
+    @Override
+    public Collection<ITriggerExternal> getExternalTriggers(ForgeDirection side, TileEntity tile) {
+        return null;
+    }
 
 }

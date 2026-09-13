@@ -2,6 +2,7 @@ package buildcraft.additionalpipes.gates;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
+
 import buildcraft.additionalpipes.textures.Textures;
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.StatementManager;
@@ -10,23 +11,20 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class APTrigger implements IStatement {
 
-	protected String id;
+    protected String id;
 
-	public APTrigger(String id)
-	{
-		this.id = id;
-		StatementManager.statements.put(id, this);
-	}
+    public APTrigger(String id) {
+        this.id = id;
+        StatementManager.statements.put(id, this);
+    }
 
-	protected abstract int getIconIndex();
+    protected abstract int getIconIndex();
 
-	@SideOnly(Side.CLIENT)
-	public IIcon getIcon() {
-		return Textures.actionIconProvider.getIcon(getIconIndex());
-	}
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon() {
+        return Textures.actionIconProvider.getIcon(getIconIndex());
+    }
 
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-	}
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister iconRegister) {}
 }

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.additionalpipes.APConfiguration;
 import buildcraft.additionalpipes.AdditionalPipes;
 import buildcraft.additionalpipes.gui.GuiHandler;
@@ -23,115 +24,120 @@ import buildcraft.transport.pipes.events.PipeEventItem;
 
 public class PipeItemsDistributor extends APPipe<PipeTransportItems> {
 
-	public int distData[] = { 1, 1, 1, 1, 1, 1 };
-	public int distSide = 0;
-	public int curTick = Integer.MAX_VALUE;
+    public int distData[] = { 1, 1, 1, 1, 1, 1 };
+    public int distSide = 0;
+    public int curTick = Integer.MAX_VALUE;
 
-	public PipeItemsDistributor(Item item) {
-		super(new PipeTransportItems(), item);
-	}
+    public PipeItemsDistributor(Item item) {
+        super(new PipeTransportItems(), item);
+    }
 
-	@Override
-	public int getIconIndex(net.minecraftforge.common.util.ForgeDirection connection) {
-		switch(connection) {
-		case DOWN: // -y
-			return 10;
-		case UP: // +y
-			return 11;
-		case NORTH: // -z
-			return 12;
-		case SOUTH: // +z
-			return 13;
-		case WEST: // -x
-			return 14;
-		case EAST: // +x
-		default:
-			return 9;
-		}
-	}
-	
-	public void eventHandler(PipeEventItem.FindDest event)
-	{
-		LinkedList<ForgeDirection> result = new LinkedList<ForgeDirection>();
+    @Override
+    public int getIconIndex(net.minecraftforge.common.util.ForgeDirection connection) {
+        switch (connection) {
+            case DOWN: // -y
+                return 10;
+            case UP: // +y
+                return 11;
+            case NORTH: // -z
+                return 12;
+            case SOUTH: // +z
+                return 13;
+            case WEST: // -x
+                return 14;
+            case EAST: // +x
+            default:
+                return 9;
+        }
+    }
 
-		//curTick used to be initialized to 0
-		//but the issue was that when the first item stack passes through the pipe, it always sent it downward whether or not anything was connected
-		//so I changed curTick to be initialized to Integer.MAX_VALUE so that it will look for the correct output. -JS
-		if(curTick >= distData[distSide]) 
-		{
-			toNextOpenSide();
-		}
+    public void eventHandler(PipeEventItem.FindDest event) {
+        LinkedList<ForgeDirection> result = new LinkedList<ForgeDirection>();
 
-		result.add(ForgeDirection.VALID_DIRECTIONS[distSide]);
-		curTick += event.item.getItemStack().stackSize;
+        // curTick used to be initialized to 0
+        // but the issue was that when the first item stack passes through the pipe, it always sent it downward whether
+        // or not anything was connected
+        // so I changed curTick to be initialized to Integer.MAX_VALUE so that it will look for the correct output. -JS
+        if (curTick >= distData[distSide]) {
+            toNextOpenSide();
+        }
 
-		event.destinations.clear();
-		event.destinations.addAll(result);
-	}
+        result.add(ForgeDirection.VALID_DIRECTIONS[distSide]);
+        curTick += event.item.getItemStack().stackSize;
 
-	private void toNextOpenSide() {
-		curTick = 0;
-		for(int o = 0; o < distData.length; ++o) {
-			distSide = (distSide + 1) % distData.length;
-			if(distData[distSide] > 0 && container.isPipeConnected(ForgeDirection.VALID_DIRECTIONS[distSide])) {
-				break;
-			}
-		}
-		// no valid inventories found, do nothing
-	}
+        event.destinations.clear();
+        event.destinations.addAll(result);
+    }
 
-	@Override
-	public boolean blockActivated(EntityPlayer player, ForgeDirection direction) {
-		if(player.isSneaking()) {
-			return false;
-		}
+    private void toNextOpenSide() {
+        curTick = 0;
+        for (int o = 0; o < distData.length; ++o) {
+            distSide = (distSide + 1) % distData.length;
+            if (distData[distSide] > 0 && container.isPipeConnected(ForgeDirection.VALID_DIRECTIONS[distSide])) {
+                break;
+            }
+        }
+        // no valid inventories found, do nothing
+    }
 
-		Item equipped = player.getCurrentEquippedItem() != null ? player.getCurrentEquippedItem().getItem() : null;
-		if(equipped != null) {
-			if(APConfiguration.filterRightclicks && AdditionalPipes.isPipe(equipped)) {
-				return false;
-			}
-		}
+    @Override
+    public boolean blockActivated(EntityPlayer player, ForgeDirection direction) {
+        if (player.isSneaking()) {
+            return false;
+        }
 
-		if(player.worldObj.isRemote) return true;
-		player.openGui(AdditionalPipes.instance, GuiHandler.PIPE_DIST, container.getWorldObj(), container.xCoord, container.yCoord, container.zCoord);
+        Item equipped = player.getCurrentEquippedItem() != null ? player.getCurrentEquippedItem()
+            .getItem() : null;
+        if (equipped != null) {
+            if (APConfiguration.filterRightclicks && AdditionalPipes.isPipe(equipped)) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        if (player.worldObj.isRemote) return true;
+        player.openGui(
+            AdditionalPipes.instance,
+            GuiHandler.PIPE_DIST,
+            container.getWorldObj(),
+            container.xCoord,
+            container.yCoord,
+            container.zCoord);
 
-	private void sanityCheck()
-	{
-		for(int d : distData) {
-			if(d > 0) {
-				return;
-			}
-		}
-		for(int i = 0; i < distData.length; i++) {
-			Arrays.fill(distData, 1);
-		}
-	}
+        return true;
+    }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+    private void sanityCheck() {
+        for (int d : distData) {
+            if (d > 0) {
+                return;
+            }
+        }
+        for (int i = 0; i < distData.length; i++) {
+            Arrays.fill(distData, 1);
+        }
+    }
 
-		nbt.setInteger("curTick", curTick);
-		nbt.setInteger("distSide", distSide);
-		for(int i = 0; i < distData.length; i++) {
-			nbt.setInteger("distData" + i, distData[i]);
-		}
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
+        nbt.setInteger("curTick", curTick);
+        nbt.setInteger("distSide", distSide);
+        for (int i = 0; i < distData.length; i++) {
+            nbt.setInteger("distData" + i, distData[i]);
+        }
+    }
 
-		curTick = nbt.getInteger("curTick");
-		distSide = nbt.getInteger("distSide");
-		for(int i = 0; i < distData.length; i++) {
-			distData[i] = nbt.getInteger("distData" + i);
-		}
-		sanityCheck();
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+
+        curTick = nbt.getInteger("curTick");
+        distSide = nbt.getInteger("distSide");
+        for (int i = 0; i < distData.length; i++) {
+            distData[i] = nbt.getInteger("distData" + i);
+        }
+        sanityCheck();
+    }
 
 }

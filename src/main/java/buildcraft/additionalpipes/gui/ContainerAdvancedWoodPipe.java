@@ -12,63 +12,65 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+
 import buildcraft.additionalpipes.pipes.PipeTransportAdvancedWood;
 import buildcraft.core.lib.gui.BuildCraftContainer;
 import buildcraft.transport.TileGenericPipe;
 
 public class ContainerAdvancedWoodPipe extends BuildCraftContainer {
 
-	private PipeTransportAdvancedWood logic;
-	private boolean exclude;
+    private PipeTransportAdvancedWood logic;
+    private boolean exclude;
 
-	public ContainerAdvancedWoodPipe(IInventory playerInventory, PipeTransportAdvancedWood filterInventory) {
-		super(filterInventory.getSizeInventory());
-		logic = filterInventory;
-		exclude = !logic.exclude;
-		int k = 0;
+    public ContainerAdvancedWoodPipe(IInventory playerInventory, PipeTransportAdvancedWood filterInventory) {
+        super(filterInventory.getSizeInventory());
+        logic = filterInventory;
+        exclude = !logic.exclude;
+        int k = 0;
 
-		for(int j1 = 0; j1 < 9; j1++) {
-			addSlotToContainer(new Slot(filterInventory, j1 + k * 9, 8 + j1 * 18, 18 + k * 18));
-		}
+        for (int j1 = 0; j1 < 9; j1++) {
+            addSlotToContainer(new Slot(filterInventory, j1 + k * 9, 8 + j1 * 18, 18 + k * 18));
+        }
 
-		for(int l = 0; l < 3; l++) {
-			for(int k1 = 0; k1 < 9; k1++) {
-				addSlotToContainer(new Slot(playerInventory, k1 + l * 9 + 9, 8 + k1 * 18, 76 + l * 18));
-			}
+        for (int l = 0; l < 3; l++) {
+            for (int k1 = 0; k1 < 9; k1++) {
+                addSlotToContainer(new Slot(playerInventory, k1 + l * 9 + 9, 8 + k1 * 18, 76 + l * 18));
+            }
 
-		}
+        }
 
-		for(int i1 = 0; i1 < 9; i1++) {
-			addSlotToContainer(new Slot(playerInventory, i1, 8 + i1 * 18, 134));
-		}
-	}
+        for (int i1 = 0; i1 < 9; i1++) {
+            addSlotToContainer(new Slot(playerInventory, i1, 8 + i1 * 18, 134));
+        }
+    }
 
-	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
-		TileGenericPipe tile = logic.container;
-		if(tile.getWorldObj().getTileEntity(tile.xCoord, tile.yCoord, tile.zCoord) != tile) return false;
-		if(entityplayer.getDistanceSq(tile.xCoord + 0.5D, tile.yCoord + 0.5D, tile.zCoord + 0.5D) > 64) return false;
-		return true;
-	}
+    @Override
+    public boolean canInteractWith(EntityPlayer entityplayer) {
+        TileGenericPipe tile = logic.container;
+        if (tile.getWorldObj()
+            .getTileEntity(tile.xCoord, tile.yCoord, tile.zCoord) != tile) return false;
+        if (entityplayer.getDistanceSq(tile.xCoord + 0.5D, tile.yCoord + 0.5D, tile.zCoord + 0.5D) > 64) return false;
+        return true;
+    }
 
-	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-		for(Object crafter : crafters) {
-			if(exclude != logic.exclude) {
-				((ICrafting) crafter).sendProgressBarUpdate(this, 0, logic.exclude ? 1 : 0);
-			}
-		}
-		exclude = logic.exclude;
-	}
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        for (Object crafter : crafters) {
+            if (exclude != logic.exclude) {
+                ((ICrafting) crafter).sendProgressBarUpdate(this, 0, logic.exclude ? 1 : 0);
+            }
+        }
+        exclude = logic.exclude;
+    }
 
-	@Override
-	public void updateProgressBar(int i, int j) {
-		switch(i) {
-		case 0:
-			logic.exclude = (j == 1);
-			break;
-		}
-	}
+    @Override
+    public void updateProgressBar(int i, int j) {
+        switch (i) {
+            case 0:
+                logic.exclude = (j == 1);
+                break;
+        }
+    }
 
 }
